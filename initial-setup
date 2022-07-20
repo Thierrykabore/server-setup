@@ -1,0 +1,34 @@
+sudo adduser thierry
+echo thierry has been successfully added
+echo Enter a password for thierry
+read -s password
+sleep 1
+echo $password | sudo passwd thierry --stdin
+sleep 1
+echo yeah thierry added but no password for ec2-user and root ?
+sleep 1
+echo Enter a password for ec2-user
+read -s password
+sleep 1
+echo $password | sudo passwd ec2-user --stdin
+sleep 1
+echo Enter a password for root.
+sleep 1
+read -s password
+sleep 1
+echo $password | sudo passwd root --stdin
+sleep 1
+echo Granting sudo powers to thierry and ec2-user...
+sleep 1
+sudo echo "thierry ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/thierry
+sudo echo "ec2-user ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ec2-user
+echo Enabling password authentication...
+sleep 1
+sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+echo Restarting sshd to activate password authentication...
+sleep 1
+sudo systemctl restart sshd
+sleep 1
+echo Updating hostname...
+sudo hostnamectl set-hostname jumphost
+sudo su $(whoami)
